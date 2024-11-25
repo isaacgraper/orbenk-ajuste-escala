@@ -47,4 +47,3 @@ class Browser:
                 logger.info(f"Navigating to URL: {url}")
                 self.page.goto(url, wait_until="load")
                 logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
-            

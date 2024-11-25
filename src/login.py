@@ -9,6 +9,8 @@ import os
 
 load_dotenv()
 
+import time
+
 class Login:
     def __init__(self, page):
         self.username = os.getenv("USERNAME")
@@ -22,7 +24,7 @@ class Login:
 log.set_logging()
 
 import logging
-logger = logging.getLogger(f"{__name__}.Navigation")
+logger = logging.getLogger(f"{__name__}.Login")
 
 from dotenv import load_dotenv 
 import os
@@ -31,7 +33,7 @@ load_dotenv()
 
 class Login:
     def __init__(self, page):
-        self.username = "bot@icop"
+        self.username = "bot@icop" or os.getenv("USERNAME")
         self.password = os.getenv("PASSWORD")
         self.page = page
         
@@ -41,7 +43,11 @@ class Login:
         
     def input_login(self):
         try:
+            self.page.wait_for_load_state('load')
+            
             self.page.fill("input[name='username']", self.username)
+            time.sleep(5)
+            
             self.page.fill("input[name='password']", self.password)
 
             self.page.click("div.login_user > button", delay=250)

@@ -17,6 +17,9 @@ class Navigation:
             start_time = time.time()
             
             logger.info("Navigating to inconsistencies")
+            
+            self.page.wait_for_timeout(5000)
+            
             self.page.goto(f"{dev.URL}#/inconsistencies", wait_until="networkidle")
             
             logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
