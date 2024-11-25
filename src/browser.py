@@ -18,10 +18,13 @@ class Browser:
         self.page = None
 
     def __enter__(self):
-        self.playwright = sync_playwright().start()
-        self.browser = self.playwright.chromium.launch(headless=self.headless)
-        self.page = self.browser.new_page()
-        return self
+        try:
+            self.playwright = sync_playwright().start()
+            self.browser = self.playwright.chromium.launch(headless=self.headless)
+            self.page = self.browser.new_page()
+            return self
+        except Exception as e:
+            logger.error(f"An exception occurred while trying to start browser: {e}")
 
     def __exit__(self, exc_type, exc_value, traceback):
         try:
@@ -42,6 +45,6 @@ class Browser:
             else:
                 start_time = time.time()
                 logger.info(f"Navigating to URL: {url}")
-                self.page.goto(url)
+                self.page.goto(url, wait_until="load")
                 logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
             
