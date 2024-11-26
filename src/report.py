@@ -6,8 +6,10 @@ class Report:
         self.page = page
         self.data = data
     
-    def get_data(self):
-        pass
+    def get_data_and_return(self):
+        
+        
+        return self.data
     
     
     
