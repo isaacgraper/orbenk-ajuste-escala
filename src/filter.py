@@ -7,7 +7,7 @@ logger = logging.getLogger(f"{__name__}.Filter")
 import time
 
 from datetime import datetime, timedelta
-from src.page import Page
+from src.click import Page
 
 class Filter:
     def __init__(self, page):

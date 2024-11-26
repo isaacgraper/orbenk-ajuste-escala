@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(f"{__name__}.Pagination")
 
-from src.page import Page
+from src.click import Page
 
 class Pagination:
     def __init__(self, page):

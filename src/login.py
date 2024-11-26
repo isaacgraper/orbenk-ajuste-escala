@@ -6,7 +6,7 @@ import os
 
 load_dotenv()
 
-from src.page import Page
+from src.click import Page
 
 class Login:
     def __init__(self, page):

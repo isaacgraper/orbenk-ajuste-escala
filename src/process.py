@@ -11,8 +11,8 @@ from src.login import Login
 from src.filter import Filter
 from src.action import Action
 from src.pagination import Pagination
-from src.page import Page
-from src.network.network import capture_response_on_filter
+from src.click import Page
+from src.state.page_state import State
 
 class Process:
     def __init__(self, headless_mode, url):
@@ -32,19 +32,10 @@ class Process:
                 nav.navigate_to_inconsistencies()
                 
                 filter = Filter(browser.page)
-                filter.apply_100_lines()
+                # filter.apply_100_lines()
                 
                 filter = Filter(browser.page)
                 filter.apply_filter()
-                
-                browser.page.wait_for_selector(".js-content-load", state="hidden", timeout=0)
-                
-                response_data = capture_response_on_filter(browser.page, "clockings/inconsistenciessearchfilter")
-                if response_data:
-                    logger.info("Data has been loaded!")
-                    logger.info(f"{response_data}")
-                else:
-                    logger.error("Somenthing went wrong retrieving the data...")
                 
                 self.start(browser.page)
                 logger.warning("Process has been stopped!")
@@ -54,17 +45,17 @@ class Process:
             
     def start(self, page):
         logger.info("Starting process...")
-
-        try:
+        
+        try:    
             action = Action(page)
-            while True:                
+            while True:
                 action.select_all_rows()
+                
+                if State.check_has_modal():
+                    logger.info("Modal apperead")
                 
                 if self.complete(page):
                     paginate = Pagination(page)
-                    
-                    page.wait_for_selector(".js-content-load", state="hidden", timeout=0)
-                    
                     if paginate.paginate():
                         logger.info("Page paginated!")
                     else:
@@ -86,8 +77,8 @@ class Process:
                 logger.info("Adjust inconsistencies button disabled")
                 return False
             
-            logger.info("Clicking into adjust button")
-            Page.click(page, adjust_button, 1000, 30000)
+            logger.info("Clicking into adjustment button")
+            Page.click(page, adjust_button, 1000, 0)
             
             adjust_path_buttons = [
                 "[btn-radio=\"'CANCELED'\"]",
@@ -96,19 +87,18 @@ class Process:
             ]
             
             for button in adjust_path_buttons:
-                Page.click(page, button, 1000, 30000)
+                Page.click(page, button, 1000, 0)
             
             adjustment_desc = "Cancelamento realizado via Bot: \"Não registrado\""
             page.fill("input#note", adjustment_desc)
             
-            logger.info("Clicking into finish ajustments button")
-            Page.click(page, "a.btn.button_link.btn-primary.ng-binding", 2000, 30000)
+            logger.info("Clicking into finish adjustment button")
+            Page.click(page, "a.btn.button_link.btn-primary.ng-binding", 1000, 0)
+            
+            State.check_has_modal_load_content(page)
             
             logger.info("Process completed!")
             return True
-        except TimeoutError:
-            logger.error(f"Exceeded timeout of 60000ms to comple process")
-            return False
         except Exception as e:
             logger.error(f"An unexpected error occurred during complete process: {e}", exc_info=True)
             raise
