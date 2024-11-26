@@ -1,6 +1,3 @@
-import config.logging as log
-log.set_logging()
-
 import logging
 logger = logging.getLogger(f"{__name__}.Login")
 
@@ -9,27 +6,7 @@ import os
 
 load_dotenv()
 
-import time
-
-class Login:
-    def __init__(self, page):
-        self.username = os.getenv("USERNAME")
-        self.password = os.getenv("PASSWORD")
-        self.page = page
-        
-    def login(self):
-        logger.info("Input username")
-        self.page.fill("input[name='username']", self.username)
-        import config.logging as log
-log.set_logging()
-
-import logging
-logger = logging.getLogger(f"{__name__}.Login")
-
-from dotenv import load_dotenv 
-import os
-
-load_dotenv()
+from src.page import Page
 
 class Login:
     def __init__(self, page):
@@ -43,14 +20,11 @@ class Login:
         
     def input_login(self):
         try:
-            self.page.wait_for_load_state('load')
-            
             self.page.fill("input[name='username']", self.username)
-            time.sleep(5)
             
             self.page.fill("input[name='password']", self.password)
 
-            self.page.click("div.login_user > button", delay=250)
+            Page.click(self.page, "div.login_user > button", 1000, 30000)
             
             self.page.wait_for_load_state('networkidle')
             

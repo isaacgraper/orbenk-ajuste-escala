@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger(f"{__name__}.Action")
 
+from src.page import Page
+
 class Action:
     def __init__(self, page):
         self.page = page
@@ -16,10 +18,11 @@ class Action:
             logger.info("Waiting for checkbox be visible...")
             self.page.wait_for_selector(checkbox_selector, state="visible")
             
-            logger.info("Clicking checkbox button...")
-            self.page.click(checkbox_selector, delay=1000, timeout=0)
+            logger.info("Clicking into checkbox")
+            Page.click(self.page, checkbox_selector, 1000, 30000)
             
             logger.info("Selected all rows in the table!")
-            return
+        except TimeoutError:
+            logger.error("Execeeded timeout to select all rows")
         except Exception as e:
             logger.error(f"Error while selecting rows: {e}", exc_info=True)

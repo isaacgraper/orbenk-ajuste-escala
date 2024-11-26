@@ -7,7 +7,7 @@ logger = logging.getLogger(f"{__name__}.Filter")
 import time
 
 from datetime import datetime, timedelta
-from src.state.page_state import State
+from src.page import Page
 
 class Filter:
     def __init__(self, page):
@@ -17,38 +17,37 @@ class Filter:
         try:
             logger.info("Clicking into filter lines")
             
-            self.page.click("div.app-content-body.nicescroll-continer > div.content-body > div.content-body-header > div.content-body-header-filters > div.filters-right > div > div > button:nth-child(2)", delay=250)
+            lines_btn = "div.app-content-body.nicescroll-continer > div.content-body > div.content-body-header > div.content-body-header-filters > div.filters-right > div > div > button:nth-child(2)"
+            Page.click(self.page, lines_btn, 500, 0)
             
-            logger.info("Selecting hundred lines..")
-            
-            self.page.click("div.content-body-header-filters > div.filters-right > div > div > ul > li:nth-child(4) > a", delay=2000)
+            logger.info("Selected hundred lines")
+            lines_option = "div.content-body-header-filters > div.filters-right > div > div > ul > li:nth-child(4) > a"
+            Page.click(self.page, lines_option, 500, 0)
             
             self.page.wait_for_load_state('load')
+            logger.info("Hundred lines filter applied!")
         except Exception as e:
             logger.error(f"An exception occurred while trying to apply filter: {e}")
             
     def apply_filter(self):
         try:
-            logger.info("Clicking into filter button")
+            logger.info("Filtering inconsistencies...")
             
-            self.page.wait_for_selector("i#inconsistenciesFilter", state="visible")
-            self.page.click("i#inconsistenciesFilter", delay=1000)
-            
+            Page.click(self.page, "#inconsistenciesFilter", 3000, 0)
             logger.info("Selecting inconsistencies type:")
             
             inconsistencies_type = ["Não registrado"]
-            
             for label in inconsistencies_type:
                 logger.info(f"{label}")
                 self.page.select_option("select#clockingTypes", label=label)
             
+            self.apply_date_filter()
             self.page.wait_for_load_state('load')
             
-            self.apply_date_filter()
-            
             logger.info("Clicking into filter")
+            Page.click(self.page, "div.filter_container > div.hbox.filter_button.ng-scope > a.btn.button_link.btn-dark.ng-binding", 5000, 0)
             
-            self.page.click("a.btn.button_link.btn-dark", delay=1000)
+            logger.info("Inconsistencies filter applied!")
         except Exception as e:
             logger.error(f"An exception occurred while trying to apply filter: {e}")
 
@@ -64,8 +63,7 @@ class Filter:
             self.page.fill("input#finishDate", formatted_date)
             
             self.page.wait_for_load_state('load')
+            
+            logger.info("Inconsistencies finishDate applied!")
         except Exception as e:
             logger.error(f"An exception occurred while trying to apply finishDate filter: {e}")
-    
-    def sort_date_filter():
-        pass
