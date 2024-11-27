@@ -1,10 +1,12 @@
-import config.dev as dev
-from src.browser import Browser
-from src.navigation import Navigation
-
+import time
 import logging
+
 logger = logging.getLogger(f"{__name__}.Process")
 
+import config.dev as dev
+
+from src.browser import Browser
+from src.navigation import Navigation
 from src.login import Login
 from src.filter import Filter
 from src.action import Action
@@ -25,9 +27,9 @@ class Process:
                 browser.go_to_url(self.url)
                 
                 login = Login(browser.page)
+                time.sleep(10)
                 
                 browser.page.wait_for_load_state('load')
-                
                 login.input_login()
                 
                 nav = Navigation(browser.page)
