@@ -5,14 +5,13 @@ from src.navigation import Navigation
 import logging
 logger = logging.getLogger(f"{__name__}.Process")
 
-import time
-
 from src.login import Login
 from src.filter import Filter
 from src.action import Action
 from src.pagination import Pagination
-from src.click import Page
+from src.click import Click
 from src.state.page_state import State
+from src.report import Report
 
 class Process:
     def __init__(self, headless_mode, url):
@@ -26,6 +25,9 @@ class Process:
                 browser.go_to_url(self.url)
                 
                 login = Login(browser.page)
+                
+                browser.page.wait_for_load_state('load')
+                
                 login.input_login()
                 
                 nav = Navigation(browser.page)
@@ -39,7 +41,7 @@ class Process:
                 
                 self.start(browser.page)
                 logger.warning("Process has been stopped!")
-                time.sleep(999)
+                browser.page.pause()
         except Exception as e:
             logger.error(f"An exception occurred during execute process: {e}", exc_info=True)
             
@@ -51,8 +53,11 @@ class Process:
             while True:
                 action.select_all_rows()
                 
-                if State.check_has_modal():
-                    logger.info("Modal apperead")
+                if State.check_has_modal(page):
+                     logger.info("Modal apperead")
+                
+                data = Report.get_data_and_return(page)
+                Report.generate_report(data)
                 
                 if self.complete(page):
                     paginate = Pagination(page)
@@ -64,6 +69,8 @@ class Process:
                 else:
                     logger.info("No more inconsistencies to process...")
                     return
+        except TimeoutError:
+            logger.error("Exceeded timeout for pagination")
         except Exception as e:
             logger.error(f"An exception occurred during start process: {e}", exc_info=True)
             
@@ -78,7 +85,7 @@ class Process:
                 return False
             
             logger.info("Clicking into adjustment button")
-            Page.click(page, adjust_button, 1000, 0)
+            Click.click(page, adjust_button)
             
             adjust_path_buttons = [
                 "[btn-radio=\"'CANCELED'\"]",
@@ -87,18 +94,18 @@ class Process:
             ]
             
             for button in adjust_path_buttons:
-                Page.click(page, button, 1000, 0)
+                Click.click(page, button)
             
             adjustment_desc = "Cancelamento realizado via Bot: \"Não registrado\""
             page.fill("input#note", adjustment_desc)
             
             logger.info("Clicking into finish adjustment button")
-            Page.click(page, "a.btn.button_link.btn-primary.ng-binding", 1000, 0)
-            
-            State.check_has_modal_load_content(page)
+            Click.click(page, "a.btn.button_link.btn-primary.ng-binding")
             
             logger.info("Process completed!")
             return True
+        except TimeoutError:
+            logger.error("Exceeded timeout for pagination")
         except Exception as e:
             logger.error(f"An unexpected error occurred during complete process: {e}", exc_info=True)
             raise

@@ -6,7 +6,7 @@ class State:
     @staticmethod
     def check_has_modal_load_content(page):
         try:
-            modal = page.wait_for_selector("div.js-content-load", state="visible", timeout=10000)
+            modal = page.wait_for_selector("div.js-content-load", state="visible", timeout=0)
             if modal:
                 logger.info("Modal content appeared")
 
@@ -32,7 +32,7 @@ class State:
                 
     @staticmethod
     def check_has_modal(page):
-        pass
+        return True
     
     @staticmethod
     def check_has_more_data(page):

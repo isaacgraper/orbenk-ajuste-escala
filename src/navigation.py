@@ -16,11 +16,12 @@ class Navigation:
         try:
             start_time = time.time()
             
-            logger.info("Navigating to inconsistencies")
-            
-            self.page.goto(f"{dev.URL}#/inconsistencies", wait_until="networkidle")
-            
             self.page.wait_for_load_state('load')
+            
+            logger.info("Navigating to inconsistencies")
+            time.sleep(0.5)
+            
+            self.page.goto(f"{dev.URL}#/inconsistencies", wait_until="load")
             
             logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
         except Exception as e:

@@ -6,8 +6,6 @@ log.set_logging()
 import logging
 logger = logging.getLogger(f"{__name__}.Browser")
 
-
-
 import time
 
 class Browser:
@@ -26,7 +24,7 @@ class Browser:
         except Exception as e:
             logger.error(f"An exception occurred while trying to start browser: {e}")
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value):
         try:
             if self.browser:
                 self.browser.close()
@@ -43,7 +41,10 @@ class Browser:
             if not url:
                 logger.error(f"Error no URL specified: {url}")
             else:
-                start_time = time.time()
-                logger.info(f"Navigating to URL: {url}")
-                self.page.goto(url, wait_until="load")
-                logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
+                try:
+                    start_time = time.time()
+                    logger.info(f"Navigating to URL: {url}")
+                    self.page.goto(url, wait_until="load", timeout=120000)
+                    logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
+                except TimeoutError:
+                    logger.erro("Exceeded 120000ms for login page to load...")

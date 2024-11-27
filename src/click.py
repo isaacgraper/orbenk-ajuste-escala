@@ -2,38 +2,23 @@ import logging
 logger = logging.getLogger(f"{__name__}.Click")
 
 class Click:
-    
     @staticmethod
-    def click(page, element, delay, timeout):
+    def click(page, element, delay=1000, timeout=60000, force=False):
         try:
             el = page.locator(element)
-            el.wait_for(state="visible")
-            el.hover()
-            el.click(force=True, delay=delay, timeout=timeout)
+            el.scroll_into_view_if_needed()
+
+            el.wait_for(state='visible', timeout=timeout)
+            
+            try:
+                el.click(delay=delay, timeout=timeout, force=force)
+            except:
+                try:
+                    el.click(delay=delay, timeout=timeout, force=True)
+                except:
+                    page.evaluate('element => element.click()', el)
             
             page.wait_for_load_state('load')
-        except Exception as e:
-            logging.error(f"Failed to click on {element}: {str(e)}")
-            raise
-        
-    @staticmethod
-    def safe_click(page, element, delay, timeout, blocking_selector=None):
-        try:
-            el = page.locator(element)
-            el.wait_for(state="visible", timeout=timeout)
-
-            if blocking_selector:
-                logging.info("Waiting for blocking element to disappear...")
-                page.wait_for_selector(blocking_selector, state="hidden", timeout=timeout)
-
-            logging.info(f"Hovering over {element}")
-            el.hover()
-
-            logging.info(f"Clicking on {element}")
-            el.click(force=True, delay=delay, timeout=timeout)
-
-            page.wait_for_load_state('load')
-            logging.info("Click action completed successfully.")
         except Exception as e:
             logging.error(f"Failed to click on {element}: {str(e)}")
             raise
