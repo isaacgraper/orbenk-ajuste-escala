@@ -5,5 +5,5 @@ load_dotenv()
 
 USERNAME = os.getenv("USERNAME")
 PASSWORD= os.getenv("PASSWORD")
-URL = os.getenv("URL_DEV")
+URL = os.getenv("URL_PROD")
 HEADLESS=True
