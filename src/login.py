@@ -8,6 +8,8 @@ load_dotenv()
 
 from src.click import Click
 
+import time
+
 class Login:
     def __init__(self, page):
         self.username = "bot@icop" or os.getenv("USERNAME")
@@ -20,13 +22,21 @@ class Login:
         
     def input_login(self):
         try:
-            self.page.wait_for_load_state('load')
-                                          
+            context = self.page.context
+            context.clear_cookies()
+            context.clear_browser_cache()
+            self.page.reload(wait_until="load")
+            logger.info("Page refreshed and loaded")
+            
+            logger.info("Inputing username")
+            self.page.wait_for_selector("input[name='username']", timeout=30000)
             self.page.fill("input[name='username']", self.username)
             
+            logger.info("Inputing password")
+            self.page.wait_for_selector("input[name='password']", timeout=30000)
             self.page.fill("input[name='password']", self.password)
 
-            Click.click(self.page, "div.login_user > button", 2000)
+            Click.click(self.page, "div.login_user > button", 1000)
             
             self.page.wait_for_load_state('load')
             
