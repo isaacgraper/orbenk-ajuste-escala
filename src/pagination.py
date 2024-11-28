@@ -1,7 +1,10 @@
+import time
 import logging
 logger = logging.getLogger(f"{__name__}.Pagination")
 
 from src.click import Click
+
+from playwright.sync_api import expect
 
 class Pagination:
     def __init__(self, page):
@@ -11,8 +14,7 @@ class Pagination:
         try:
             next_page_button = "[ng-click=\"changePage('next')\"]"
             
-            self.page.locator(next_page_button)
-            if next_page_button.count() == 0:
+            if self.page.locator(next_page_button).count() == 0:
                 logger.info("Change page to next page desapperead")
                 return False
              
@@ -22,8 +24,12 @@ class Pagination:
             logger.info("Clicking next page button")
             Click.click(self.page, next_page_button)
             
+            time.sleep(2)
+            
             self.page.wait_for_load_state('load')
 
+            time.sleep(5)
+            
             logger.info("Successfully paginated to the next page!")
             return True
         except TimeoutError:

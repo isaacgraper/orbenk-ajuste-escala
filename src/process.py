@@ -27,7 +27,6 @@ class Process:
                 browser.go_to_url(self.url)
                 
                 login = Login(browser.page)
-                time.sleep(10)
                 
                 browser.page.wait_for_load_state('load')
                 login.input_login()
@@ -59,8 +58,8 @@ class Process:
                      logger.info("Modal apperead")
                 
                 data = Report.get_data_and_return(page)
-                Report.generate_report(data)
-                
+                Report.generate_report(data, "") # Include path for report data file
+                 
                 if self.complete(page):
                     paginate = Pagination(page)
                     if paginate.paginate():
@@ -72,7 +71,7 @@ class Process:
                     logger.info("No more inconsistencies to process...")
                     return
         except TimeoutError:
-            logger.error("Exceeded timeout for pagination")
+            logger.error("Exceeded timeout for process")
         except Exception as e:
             logger.error(f"An exception occurred during start process: {e}", exc_info=True)
             
@@ -107,7 +106,7 @@ class Process:
             logger.info("Process completed!")
             return True
         except TimeoutError:
-            logger.error("Exceeded timeout for pagination")
+            logger.error("Exceeded timeout for complete")
         except Exception as e:
             logger.error(f"An unexpected error occurred during complete process: {e}", exc_info=True)
             raise

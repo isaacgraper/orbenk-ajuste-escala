@@ -32,7 +32,8 @@ class State:
                 
     @staticmethod
     def check_has_modal(page):
-        return True
+        # document.querySelector("div>.modal-content")
+        pass
     
     @staticmethod
     def check_has_more_data(page):

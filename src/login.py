@@ -21,36 +21,34 @@ class Login:
         
     def input_login(self):
         try:
-            retry = 3
-            current_url = self.page.url
+            logger.info("Attempting login...")
+                
+            self.page.wait_for_selector("input[name='username']", timeout=30000)
             
-            while current_url == "https://orbenk.nexti.com/#/login" and retry > 0:
-                logger.info("Attempting login...")
-                
-                self.page.wait_for_selector("input[name='username']", timeout=30000)
-                time.sleep(2)
-                self.page.fill("input[name='username']", self.username)
-                logger.info("Username inputted successfully.")
-                
-                self.page.wait_for_selector("input[name='password']", timeout=30000)
-                time.sleep(2)
-                self.page.fill("input[name='password']", self.password)
-                logger.info("Password inputted successfully.")
-
-                Click.click(self.page, "div.login_user > button", 1000)
-                self.page.wait_for_load_state('load')
-
-                current_url = self.page.url
-                logger.info(f"Current URL: {current_url}")
-                
-                retry -= 1
+            time.sleep(2)
             
-            if current_url != "https://orbenk.nexti.com/#/login":
-                logger.info("Login successfully completed!")
+            self.page.fill("input[name='username']", self.username)
+            logger.info("Username inputted successfully")
+            
+            self.page.wait_for_selector("input[name='password']", timeout=30000)
+            
+            time.sleep(2)
+            
+            self.page.fill("input[name='password']", self.password)
+            logger.info("Password inputted successfully")
+
+            Click.click(self.page, "div.login_user > button", 1000)
+            
+            self.page.wait_for_load_state('load')
+            
+            time.sleep(5)
+            
+            if self.page.url != "https://orbenk.nexti.com/#/login":
+                logger.info("Login sucessfully!")
             else:
-                logger.error("Login failed after 3 attempts.")
-        
+                logger.error("Login failed...")
+
         except TimeoutError:
-            logger.error("Exceeded timeout while trying to login.")
+            logger.error("Exceeded timeout while trying to login")
         except Exception as e:
             logger.error(f"Error while trying to login: {e}", exc_info=True)

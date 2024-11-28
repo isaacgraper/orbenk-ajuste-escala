@@ -24,7 +24,7 @@ class Browser:
         except Exception as e:
             logger.error(f"An exception occurred while trying to start browser: {e}")
 
-    def __exit__(self, exc_type, exc_value):
+    def __exit__(self, exc_type, exc_value, traceback):
         try:
             if self.browser:
                 self.browser.close()

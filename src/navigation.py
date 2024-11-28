@@ -19,9 +19,12 @@ class Navigation:
             self.page.wait_for_load_state('load')
             
             logger.info("Navigating to inconsistencies")
-            time.sleep(0.5)
+            
+            time.sleep(2)
             
             self.page.goto(f"{dev.URL}#/inconsistencies", wait_until="load")
+            
+            time.sleep(10)
             
             logger.info(f"Navigation completed in {time.time() - start_time:.2f} seconds")
         except Exception as e:

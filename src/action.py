@@ -1,3 +1,4 @@
+import time
 import logging
 logger = logging.getLogger(f"{__name__}.Action")
 
@@ -19,8 +20,13 @@ class Action:
             self.page.wait_for_selector(checkbox_selector, state="visible", timeout=0)
             
             logger.info("Clicking into checkbox")
+            
+            time.sleep(2)
             Click.click(self.page, checkbox_selector)
             
+            self.page.wait_for_load_state('load')
+            time.sleep(5)
+
             logger.info("Selected all rows in the table!")
         except TimeoutError:
             logger.error("Exceeded timeout for pagination")
