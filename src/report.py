@@ -2,6 +2,10 @@ import logging
 logger = logging.getLogger(f"{__name__}.Report")
 
 import pandas as pd
+import os
+import csv
+
+from datetime import date
 
 class Report:
     
@@ -47,10 +51,22 @@ class Report:
         pass
     
     @staticmethod
-    def generate_report(data, path):
-        for item in data:
-            print(item)
-        pass
+    def generate_report_csv(data, path):
+        today = date.today().strftime("%Y-%m-%d")
+        
+        filename = f"relatório-inconsistência-não-registrados-{today}.txt"
+        
+        file_path = os.path.join(path, filename)
+        
+        try:
+            os.makedirs(path, exist_ok=True)
+            
+            with open(file_path, mode="a", newline="", encoding="utf-8") as file:
+                for row in data:
+                    file.write(",".join(row) + "\n")
+            logger.info(f"Report saved in: {file_path}")
+        except Exception as e:
+            logger.error(f"An error occurred while trying to generate report file: {e}")
     
     
     

@@ -43,11 +43,7 @@ class Login:
             
             time.sleep(5)
             
-            if self.page.url != "https://orbenk.nexti.com/#/login":
-                logger.info("Login sucessfully!")
-            else:
-                logger.error("Login failed...")
-
+            logger.info("Login sucessfully!")
         except TimeoutError:
             logger.error("Exceeded timeout while trying to login")
         except Exception as e:

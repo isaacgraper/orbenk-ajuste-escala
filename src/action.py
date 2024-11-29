@@ -21,8 +21,8 @@ class Action:
             
             logger.info("Clicking into checkbox")
             
-            time.sleep(2)
-            Click.click(self.page, checkbox_selector)
+            time.sleep(10)
+            Click.click(self.page, checkbox_selector, delay=2000, timeout=0)
             
             self.page.wait_for_load_state('load')
             time.sleep(5)

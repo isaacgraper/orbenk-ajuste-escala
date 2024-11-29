@@ -11,18 +11,18 @@ class Pagination:
         self.page = page
     
     def paginate(self):
+        next_page_button = "[ng-click=\"changePage('next')\"]"
+        
         try:
-            next_page_button = "[ng-click=\"changePage('next')\"]"
-            
             if self.page.locator(next_page_button).count() == 0:
                 logger.info("Change page to next page desapperead")
                 return False
              
             logger.info("Waiting for next page button to be visible...")
-            self.page.wait_for_selector(next_page_button, state="visible", timeout=60000)
+            self.page.wait_for_selector(next_page_button, state="visible", timeout=0)
             
             logger.info("Clicking next page button")
-            Click.click(self.page, next_page_button)
+            Click.click(self.page, next_page_button, delay=2000, timeout=0)
             
             time.sleep(2)
             

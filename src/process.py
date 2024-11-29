@@ -1,6 +1,4 @@
-import time
 import logging
-
 logger = logging.getLogger(f"{__name__}.Process")
 
 import config.dev as dev
@@ -14,6 +12,8 @@ from src.pagination import Pagination
 from src.click import Click
 from src.state.page_state import State
 from src.report import Report
+
+import time
 
 class Process:
     def __init__(self, headless_mode, url):
@@ -35,7 +35,7 @@ class Process:
                 nav.navigate_to_inconsistencies()
                 
                 filter = Filter(browser.page)
-                # filter.apply_100_lines()
+                filter.apply_100_lines()
                 
                 filter = Filter(browser.page)
                 filter.apply_filter()
@@ -52,15 +52,16 @@ class Process:
         try:    
             action = Action(page)
             while True:
+                if State.check_has_modal(page):
+                    logger.info("Modal apperead")
+                
                 action.select_all_rows()
                 
-                if State.check_has_modal(page):
-                     logger.info("Modal apperead")
-                
                 data = Report.get_data_and_return(page)
-                Report.generate_report(data, "") # Include path for report data file
                  
                 if self.complete(page):
+                    Report.generate_report_csv(data, "Z:\RobôCOP\Relatórios")
+                    
                     paginate = Pagination(page)
                     if paginate.paginate():
                         logger.info("Page paginated!")
@@ -98,10 +99,16 @@ class Process:
                 Click.click(page, button)
             
             adjustment_desc = "Cancelamento realizado via Bot: \"Não registrado\""
+            
+            time.sleep(2)
+            
             page.fill("input#note", adjustment_desc)
             
             logger.info("Clicking into finish adjustment button")
-            Click.click(page, "a.btn.button_link.btn-primary.ng-binding")
+            
+            time.sleep(5)
+            
+            Click.click(page, "a.btn.button_link.btn-primary.ng-binding", delay=2000, timeout=0)
             
             logger.info("Process completed!")
             return True

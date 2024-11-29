@@ -1,6 +1,10 @@
 import logging
 logger = logging.getLogger(f"{__name__}.State")
 
+from playwright.sync_api import expect
+
+from src.click import Click
+
 class State:
     
     @staticmethod
@@ -32,8 +36,22 @@ class State:
                 
     @staticmethod
     def check_has_modal(page):
-        # document.querySelector("div>.modal-content")
-        pass
+        try:
+            modal = page.locator("div.modal-content")
+            
+            is_visible = modal.evaluate(
+                "(el) => el.offsetWidth > 0 && el.offsetHeight > 0 && window.getComputedStyle(el).visibility !== 'hidden'"
+            )
+            
+            if is_visible:
+                Click.click(page, "div.close")
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.error(f"Error while checking if modal apperead: {e}")
+            return False
+        
     
     @staticmethod
     def check_has_more_data(page):
